@@ -134,3 +134,10 @@ AUTH_USER_MODEL = 'users.User'
 LOGIN_URL = '/users/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
+
+DOMAIN_NAME = 'http://localhost:8000'
+
+EMAIL_HOST = 'smtp.mailtrap.io'
+EMAIL_HOST_USER = '4d46d1f501af5e'
+EMAIL_HOST_PASSWORD = 'a10148b931b84a'
+EMAIL_PORT = '2525'

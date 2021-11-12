@@ -1,7 +1,9 @@
+from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.auth.views import LoginView, LogoutView
+from django.http import HttpResponseRedirect
 from django.views.generic.edit import CreateView, UpdateView
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 
 from common.views import CommonContextMixin
 from users.forms import UserLoginForm, UserRegistrationForm, UserProfileForm
@@ -20,7 +22,7 @@ class UserRegistrationView(CommonContextMixin, SuccessMessageMixin, CreateView):
     form_class = UserRegistrationForm
     template_name = 'users/register.html'
     success_url = reverse_lazy('users:login')
-    success_message = 'Вы успешно зарегестрировались!'
+    success_message = 'Для завершения регистрации перейдите по ссылке, направленной на Вашу почту!'
     title = 'GeekShop - Регистрация'
 
 
@@ -41,6 +43,22 @@ class UserProfileView(CommonContextMixin, UpdateView):
 
 class UserLogoutView(LogoutView):
     pass
+
+
+def verify(request, email, activation_key):
+    try:
+        user = User.objects.get(email=email)
+        if user.activation_key == activation_key and not user.activation_key_expired():
+            user.is_active = True
+            user.save()
+            messages.success(request, f'Поздравляем! Пользователь {user.username} активирован!')
+            return HttpResponseRedirect(reverse('users:login'))
+        else:
+            messages.error(request, f'Ошибка активации пользователя {user.username}')
+            return HttpResponseRedirect(reverse('users:login'))
+    except Exception as e:
+        messages.error(request, e)
+        return HttpResponseRedirect(reverse('users:login'))
 
 # def login(request):
 #     if request.method == 'POST':
