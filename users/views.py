@@ -2,11 +2,13 @@ from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.auth.views import LoginView, LogoutView
 from django.http import HttpResponseRedirect
+from django.contrib import auth
 from django.views.generic.edit import CreateView, UpdateView
 from django.urls import reverse_lazy, reverse
+from django.db import transaction
 
 from common.views import CommonContextMixin
-from users.forms import UserLoginForm, UserRegistrationForm, UserProfileForm
+from users.forms import UserLoginForm, UserRegistrationForm, UserProfileForm, UserProfileEditForm
 from users.models import User
 from baskets.models import Basket
 
@@ -51,6 +53,7 @@ def verify(request, email, activation_key):
         if user.activation_key == activation_key and not user.activation_key_expired():
             user.is_active = True
             user.save()
+            auth.login(request, user, backend='django.contrib.auth.backends.ModelBackend')
             messages.success(request, f'Поздравляем! Пользователь {user.username} активирован!')
             return HttpResponseRedirect(reverse('users:login'))
         else:
@@ -59,6 +62,24 @@ def verify(request, email, activation_key):
     except Exception as e:
         messages.error(request, e)
         return HttpResponseRedirect(reverse('users:login'))
+
+
+@transaction.atomic
+def edit(request):
+
+    if request.method == 'POST':
+        edit_form = UserProfileForm(request.POST, request.FILES, instance=request.user)
+
+        profile_form = UserProfileEditForm(request.POST, instance=request.user.userprofile)
+
+        if edit_form.is_valid() and profile_form.is_valid():
+            edit_form.save()
+            return HttpResponseRedirect(reverse('users:profile'))
+    # else:
+    #     edit_form = UserProfileForm(instance=request.user)
+    #     profile_form = UserProfileEditForm(instance=request.user.userprofile)
+
+    return HttpResponseRedirect(reverse('users:profile'))
 
 # def login(request):
 #     if request.method == 'POST':
