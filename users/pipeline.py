@@ -17,7 +17,7 @@ def save_user_profile(backend, user, response, *args, **kwargs):
                           'api.vk.com',
                           '/method/users.get',
                           None,
-                          urlencode(OrderedDict(fields=','.join(('bdate', 'sex', 'city', 'home_town')),
+                          urlencode(OrderedDict(fields=','.join(('bdate', 'sex', 'city', 'country')),
                                                 access_token=response['access_token'],
                                                 v='5.131')),
                           None
@@ -31,11 +31,11 @@ def save_user_profile(backend, user, response, *args, **kwargs):
     if data['sex']:
         user.userprofile.gender = UserProfile.MALE if data['sex'] == 2 else UserProfile.FEMALE
 
-    if data['home_town']:
-        user.userprofile.hometown = data['home_town']
+    if data['country']:
+        user.userprofile.country = data['country']['title']
 
     if data['city']:
-        user.userprofile.current_city = data['city']
+        user.userprofile.current_city = data['city']['title']
 
     if data['bdate']:
         bdate = datetime.strptime(data['bdate'], '%d.%m.%Y').date()
