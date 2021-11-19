@@ -2,11 +2,16 @@ from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.auth.views import LoginView, LogoutView
 from django.http import HttpResponseRedirect
-from django.views.generic.edit import CreateView, UpdateView
+from django.contrib import auth
+from django.shortcuts import render
+from django.views.generic.edit import CreateView
 from django.urls import reverse_lazy, reverse
+from django.db import transaction
+from django.contrib.auth.decorators import login_required
+
 
 from common.views import CommonContextMixin
-from users.forms import UserLoginForm, UserRegistrationForm, UserProfileForm
+from users.forms import UserLoginForm, UserRegistrationForm, UserProfileForm, UserProfileEditForm
 from users.models import User
 from baskets.models import Basket
 
@@ -26,23 +31,34 @@ class UserRegistrationView(CommonContextMixin, SuccessMessageMixin, CreateView):
     title = 'GeekShop - Регистрация'
 
 
-class UserProfileView(CommonContextMixin, UpdateView):
-    model = User
-    form_class = UserProfileForm
-    template_name = 'users/profile.html'
-    title = 'GeekShop - Личный кабинет'
-
-    def get_success_url(self):
-        return reverse_lazy('users:profile', args=(self.object.id,))
-
-    def get_context_data(self, **kwargs):
-        context = super(UserProfileView, self).get_context_data(**kwargs)
-        context['baskets'] = Basket.objects.filter(user=self.object)
-        return context
-
-
 class UserLogoutView(LogoutView):
     pass
+
+@login_required
+@transaction.atomic
+def profile(request):
+    user = request.user
+    if request.method == 'POST':
+        edit_form = UserProfileForm(request.POST, request.FILES, instance=request.user)
+        profile_form = UserProfileEditForm(request.POST, instance=request.user.userprofile)
+
+        if edit_form.is_valid() and profile_form.is_valid():
+            edit_form.save()
+            return HttpResponseRedirect(reverse('users:profile'))
+    else:
+        edit_form = UserProfileForm(instance=request.user)
+        profile_form = UserProfileEditForm(instance=request.user.userprofile)
+
+    context = {
+        'title': 'GeekShop - Профиль',
+        'edit_form': edit_form,
+        'profile_form': profile_form,
+        'baskets': Basket.objects.filter(user=user),
+    }
+    return render(request, 'users/profile.html', context)
+
+    # return HttpResponseRedirect(reverse('users:profile'))
+
 
 
 def verify(request, email, activation_key):
@@ -51,6 +67,7 @@ def verify(request, email, activation_key):
         if user.activation_key == activation_key and not user.activation_key_expired():
             user.is_active = True
             user.save()
+            auth.login(request, user, backend='django.contrib.auth.backends.ModelBackend')
             messages.success(request, f'Поздравляем! Пользователь {user.username} активирован!')
             return HttpResponseRedirect(reverse('users:login'))
         else:
@@ -59,6 +76,26 @@ def verify(request, email, activation_key):
     except Exception as e:
         messages.error(request, e)
         return HttpResponseRedirect(reverse('users:login'))
+
+
+
+
+
+
+# class UserProfileView(CommonContextMixin, UpdateView):
+#     model = User
+#     form_class = UserProfileForm
+#     template_name = 'users/profile.html'
+#     title = 'GeekShop - Личный кабинет'
+#
+#     def get_success_url(self):
+#         return reverse_lazy('users:profile', args=(self.object.id,))
+#
+#     def get_context_data(self, **kwargs):
+#         context = super(UserProfileView, self).get_context_data(**kwargs)
+#         context['baskets'] = Basket.objects.filter(user=self.object)
+#         return context
+
 
 # def login(request):
 #     if request.method == 'POST':

@@ -6,8 +6,9 @@ from django.contrib.auth.forms import AuthenticationForm, UserCreationForm, User
 from django import forms
 from django.core.mail import send_mail
 from django.urls import reverse
+from django.template.defaulttags import register
 
-from users.models import User
+from users.models import User, UserProfile
 
 
 class UserLoginForm(AuthenticationForm):
@@ -63,10 +64,34 @@ class UserRegistrationForm(UserCreationForm):
 class UserProfileForm(UserChangeForm):
     username = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control py-4', 'readonly': True}))
     email = forms.CharField(widget=forms.EmailInput(attrs={'class': 'form-control py-4', 'readonly': True}))
+    age = forms.IntegerField(widget=forms.TextInput(attrs={'class': 'form-control py-4',  'readonly': True}))
     first_name = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control py-4'}))
     last_name = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control py-4'}))
     image = forms.ImageField(widget=forms.FileInput(attrs={'class': 'custom-file-input'}), required=False)
 
     class Meta:
         model = User
-        fields = ('username', 'email', 'first_name', 'last_name', 'image')
+        fields = ('username', 'email', 'first_name', 'last_name', 'image', 'age')
+
+
+class UserProfileEditForm(forms.ModelForm):
+    current_city = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control py-4'}))
+    country = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control py-4'}))
+    gender = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control py-4', 'readonly': True}))
+
+    @register.filter
+    def get_item(dictionary, key):
+        try:
+            return dictionary.get(key)
+        except KeyError:
+            return ''
+
+    class Meta:
+        model = UserProfile
+        fields = ('country', 'current_city', 'gender')
+
+        def __init__(self, *args, **kwargs):
+            super(UserProfileEditForm, self).__init__(*args, **kwargs)
+            for field_name, field in self.fields.items():
+                field.widget.attrs['class'] = 'form-control'
+                field.help_text = ''
