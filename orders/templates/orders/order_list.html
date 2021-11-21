@@ -1,0 +1,74 @@
+{% extends 'orders/base.html' %}
+{% load static %}
+
+{% block css %}
+    <link href="{% static 'css/profile.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="container-fluid">
+            <h1 class="mt-4">Заказы</h1>
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-table mr-1"></i>
+                    {% if user.is_staff %}
+                        Заказы пользователей
+                    {% else %}
+                        Ваши заказы, {{ user.username }}
+                    {% endif %}
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                            <thead>
+                            <tr>
+                                <th>ID Заказа</th>
+                                <th>Создан</th>
+                                <th>Обновлен</th>
+                                <th>Статус</th>
+                                <th>Активный</th>
+                            </tr>
+                            </thead>
+                            <tfoot>
+                            <tr>
+                                <th>ID Заказа</th>
+                                <th>Создан</th>
+                                <th>Обновлен</th>
+                                <th>Статус</th>
+                                <th>Активный</th>
+                            </tr>
+                            </tfoot>
+                            <tbody>
+                            {% for item in object_list %}
+                                <tr>
+                                    <td>
+                                        <a href="{% url 'orders:order_read' item.pk %} ">
+                                            {{ item.pk }}
+                                        </a>
+                                        </td>
+                                    <td>{{ item.created|date:"Y-m-d H:i:s" }}</td>
+                                    <td>{{ item.updated|date:"Y-m-d H:i:s" }}</td>
+                                    <td>{{ item.get_status_display }}</td>
+                                    <td class="text-center">
+                                        {% if item.is_active %}
+                                            <i class="fas fa-check-circle"></i>
+                                        {% else %}
+                                            <i class="fas fa-times-circle"></i>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <button class="btn btn-default btn-round">
+                    <a href="{% url 'orders:order_create' %}">
+                        Новый
+                    </a>
+                </button>
+            </div>
+        </div>
+    </div>
+{% endblock %}
