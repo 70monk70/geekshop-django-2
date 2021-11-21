@@ -30,7 +30,7 @@ class OrderList(ListView):
 class OrderCreate(CreateView):
     model = Order
     fields = []
-    success_url = reverse_lazy('orders:order_list')
+    success_url = reverse_lazy('orders:orders_list')
     extra_context = {'title': 'Создание заказа'}
 
     def get_context_data(self, **kwargs):
@@ -74,7 +74,8 @@ class OrderCreate(CreateView):
 class OrderUpdate(UpdateView):
     model = Order
     fields = []
-    success_url = reverse_lazy('orders:order_list')
+    extra_context = {'title': 'Изменение заказа'}
+    success_url = reverse_lazy('orders:orders_list')
 
     def get_context_data(self, **kwargs):
         context = super(OrderUpdate, self).get_context_data(**kwargs)
@@ -110,12 +111,13 @@ class OrderUpdate(UpdateView):
 
 class OrderDelete(DeleteView):
     model = Order
-    success_url = reverse_lazy('orders:order_list')
+    extra_context = {'title': 'Удаление заказа'}
+    success_url = reverse_lazy('orders:orders_list')
 
 
 class OrderRead(DetailView):
     model = Order
-    extra_context = {'title': 'Просмотре заказа'}
+    extra_context = {'title': 'Просмотр заказа'}
 
 
 def order_forming_complete(request, pk):

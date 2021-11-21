@@ -1,6 +1,10 @@
 {% extends 'orders/base.html' %}
 {% load static %}
 
+{% block css %}
+    <link href="{% static 'css/profile.css' %}" rel="stylesheet">
+{% endblock %}
+
 {% block content %}
    <div class="category_delete">
        <div class="h1">Уверены, что хотите удалить?</div>
@@ -9,7 +13,7 @@
            <input class="btn btn-danger" type="submit" value="удалить">
        </form>
        <button class="btn btn-success">
-           <a href="{% url 'orders:orders_list' %}">отмена</a>
+           <a href="{% url 'orders:orders_list' %}">Отмена</a>
        </button>
    </div>
 {% endblock %}
