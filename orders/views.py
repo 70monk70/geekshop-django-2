@@ -47,7 +47,6 @@ class OrderCreate(CreateView):
                 for num, form in enumerate(formset.forms):
                     form.initial['product'] = basket_items[num].product
                     form.initial['quantity'] = basket_items[num].quantity
-                    # form.initial['price'] = basket_items[num].price
                 basket_items.delete()
             else:
                 formset = OrderFormSet()
