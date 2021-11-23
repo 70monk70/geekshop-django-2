@@ -15,6 +15,8 @@ def __init__(self, *args, **kwargs):
 
 
 class OrderItemForm(forms.ModelForm):
+    price = forms.CharField(label='Цена за единицу', required=False)
+
     class Meta:
         model = OrderItem
         fields = '__all__'

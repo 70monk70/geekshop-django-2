@@ -5,6 +5,12 @@
     <link href="{% static 'css/profile.css' %}" rel="stylesheet">
 {% endblock %}
 
+{% block js %}
+{#    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>#}
+    <script src="{% static 'js/jquery.formset.js' %}"></script>
+    <script src="{% static 'js/orders_scripts.js' %}"></script>
+{% endblock %}
+
 {% block content %}
 <div class="container">
         <div class="container-fluid">
@@ -70,5 +76,6 @@
             </div>
         </div>
     </div>
+
 
 {% endblock %}
