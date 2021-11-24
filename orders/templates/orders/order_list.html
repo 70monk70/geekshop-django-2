@@ -1,0 +1,96 @@
+{% extends 'orders/base.html' %}
+{% load static %}
+
+{% block css %}
+    <link href="{% static 'css/profile.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="container-fluid">
+            <h1 class="mt-4">Заказы</h1>
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-table mr-1"></i>
+                    {% if user.is_staff %}
+                        Заказы пользователей
+                    {% else %}
+                        Ваши заказы, {{ user.username }}
+                    {% endif %}
+                </div>
+                <div class="card-body" >
+                    <div class="table-responsive">
+                        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                            <thead>
+                            <tr>
+                                <th style="vertical-align: middle">ID Заказа</th>
+                                <th style="vertical-align: middle">Создан</th>
+                                <th style="vertical-align: middle">Обновлен</th>
+                                <th style="vertical-align: middle">Статус</th>
+                                <th style="vertical-align: middle">Активный</th>
+                                <th style="vertical-align: middle">Действия</th>
+
+                            </tr>
+                            </thead>
+                            <tfoot>
+                            <tr>
+                                <th style="vertical-align: middle">ID Заказа</th>
+                                <th style="vertical-align: middle">Создан</th>
+                                <th style="vertical-align: middle">Обновлен</th>
+                                <th style="vertical-align: middle">Статус</th>
+                                <th style="vertical-align: middle">Активный</th>
+                                <th style="vertical-align: middle">Действия</th>
+
+                            </tr>
+                            </tfoot>
+                            <tbody>
+                            {% for item in object_list %}
+                                <tr>
+                                    <td style="vertical-align: middle">
+                                        <a href="{% url 'orders:order_read' item.pk %} ">
+                                            {{ item.pk }}
+                                        </a>
+                                    </td>
+                                    <td style="vertical-align: middle">{{ item.created|date:"Y-m-d H:i:s" }}</td>
+                                    <td style="vertical-align: middle">{{ item.updated|date:"Y-m-d H:i:s" }}</td>
+                                    <td style="vertical-align: middle">{{ item.get_status_display }}</td>
+                                    <td style="vertical-align: middle" class="text-center">
+                                        {% if item.is_active %}
+                                            <i class="fas fa-check-circle"></i>
+                                        {% else %}
+                                            <i class="fas fa-times-circle"></i>
+                                        {% endif %}
+                                    </td>
+                                    <td style="vertical-align: middle">
+                                        <a href="{% url 'orders:order_read' item.pk %}" class="btn btn-info btn-block">
+                                            Посмотреть
+                                        </a>
+                                        {% if item.status == 'FM' %}
+                                            <a href="{% url 'orders:order_update' item.pk %}"
+                                               class="btn btn-info btn-block">
+                                                Редактировать
+                                            </a>
+                                        {% endif %}
+                                        {% if item.status == 'FM' %}
+                                            <a href="{% url 'orders:order_delete' item.pk %}"
+                                               class="btn btn-info btn-block">
+                                                Удалить
+                                            </a>
+                                        {% endif %}
+                                    </td>
+
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <button class="btn btn-default btn-round">
+                    <a href="{% url 'orders:order_create' %}" class="btn btn-info btn-block">
+                        Новый
+                    </a>
+                </button>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,20 @@
+{% extends 'orders/base.html' %}
+{% load static %}
+
+{% block css %}
+    <div class="category_delete">
+        {% include 'orders/includes/inc_order_summary.html' %}
+        <div class="h1">Уверены, что хотите удалить?</div>
+        <div class="d-flex justify-content-around">
+            <form action="{% url 'orders:order_delete' object.pk %}" method="post">
+                {% csrf_token %}
+                <input class="btn btn-danger" type="submit" value="Удалить">
+            </form>
+                <a href="{% url 'orders:orders_list' %}" class="btn btn-success">Отмена</a>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <link href="{% static 'css/profile.css' %}" rel="stylesheet">
+{% endblock %}
