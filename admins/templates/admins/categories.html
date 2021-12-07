@@ -1,0 +1,64 @@
+{% extends 'admins/base.html' %}
+
+
+{% block content %}
+<main>
+    <div class="container-fluid">
+        <h1 class="mt-4">Категории товаров</h1>
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-table mr-1"></i>
+                Категории
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                        <thead>
+                        <tr>
+                            <th class="text-center">Наименование</th>
+                            <th class="text-center">Товары</th>
+                            <th class="text-center">Детали</th>
+                            <th class="text-center">Редактировать</th>
+                            <th class="text-center">Удалить</th>
+                        </tr>
+                        </thead>
+                        <tfoot>
+                        <tr>
+                            <th class="text-center">Наименование</th>
+                            <th class="text-center">Товары</th>
+                            <th class="text-center">Детали</th>
+                            <th class="text-center">Редактировать</th>
+                            <th class="text-center">Удалить</th>
+                        </tr>
+                        </tfoot>
+                        <tbody>
+                        {% for category in object_list %}
+                            <tr {% if not category.is_active %} style="opacity: 0.5;" {% endif %}>
+                                <td>{{ category.name }}</td>
+                                <td class="text-center"><a href="{#% url 'admins:category_update' category.pk %#}">Товары</a></td>
+                                <td class="text-center">
+{#                                    <a href="{% url 'admins:category_update' category.pk %}">Detail</a>#}
+                                </td>
+                                <td class="text-center">
+                                    <a href="{% url 'admins:category_update' category.pk %}">Редактировать</a>
+                                </td>
+                                <td class="text-center">
+{#                                    <a {% if not category.is_active %} class="invisible" {% endif %} href="{% url 'admins:category_delete' category.id %}">}#}
+                                        <i class="fa fa-times-circle"> </i>
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card-footer">
+{#                <a href="{% url 'admin_staff:product_create' category.pk %}">#}
+                    <button class="btn btn-success">Создать категорию</button>
+                </a>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %}
