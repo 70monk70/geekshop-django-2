@@ -34,6 +34,7 @@ class UserRegistrationView(CommonContextMixin, SuccessMessageMixin, CreateView):
 class UserLogoutView(LogoutView):
     pass
 
+
 @login_required
 @transaction.atomic
 def profile(request):
@@ -58,7 +59,6 @@ def profile(request):
     return render(request, 'users/profile.html', context)
 
     # return HttpResponseRedirect(reverse('users:profile'))
-
 
 
 def verify(request, email, activation_key):
